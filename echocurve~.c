@@ -7,9 +7,9 @@
 #define XTRASAMPS 4
 #define SAMPBLK 4
 
-static t_class *expdelay_tilde_class;
+static t_class *echocurve_tilde_class;
 
-typedef struct _expdelay_tilde
+typedef struct _echocurve_tilde
 {
         t_object x_obj;
         t_float x_buftime; /* max buffer length in msec */
@@ -24,7 +24,7 @@ typedef struct _expdelay_tilde
         t_float x_srate;
         t_float x_f; // hello there, what am I good for?
         t_int x_bufindex;
-} t_expdelay_tilde;
+} t_echocurve_tilde;
 
 double experp (double inval, double inlo, double inhi, double curve, double outlo, double outhi)
 {
@@ -33,16 +33,16 @@ double experp (double inval, double inlo, double inhi, double curve, double outl
         return expval * (outhi - outlo) + outlo;
 }
 
-void expdelay_tilde_bang(t_expdelay_tilde *x)
+void echocurve_tilde_bang(t_echocurve_tilde *x)
 {
         UNUSED(x);
         DEBUG(post("Hello world!"); );
 }
 
-void *expdelay_tilde_new(t_symbol *s, int argc, t_atom *argv)
+void *echocurve_tilde_new(t_symbol *s, int argc, t_atom *argv)
 {
         UNUSED(s);
-        t_expdelay_tilde *x = (t_expdelay_tilde *)pd_new(expdelay_tilde_class);
+        t_echocurve_tilde *x = (t_echocurve_tilde *)pd_new(echocurve_tilde_class);
         x->x_amp_curve = 1.;
         x->x_dur_curve = 1.;
         x->x_num_points = 20;
@@ -66,7 +66,7 @@ void *expdelay_tilde_new(t_symbol *s, int argc, t_atom *argv)
                 DEBUG(post("buffer length (ms): %f", x->x_buftime); );
                 break;
         case 0:
-                error("expdelay~: no buffer length specified: defaulting to 2000 ms");
+                error("echocurve~: no buffer length specified: defaulting to 2000 ms");
         }
         x->x_out = outlet_new(&x->x_obj, &s_signal);
         x->x_bufindex = 0;
@@ -76,15 +76,15 @@ void *expdelay_tilde_new(t_symbol *s, int argc, t_atom *argv)
         return (void *)x;
 }
 
-void expdelay_tilde_free(t_expdelay_tilde *x)
+void echocurve_tilde_free(t_echocurve_tilde *x)
 {
         free(x->x_outbuf);
         outlet_free(x->x_out);
 }
 
-static t_int *expdelay_tilde_perform(t_int *w)
+static t_int *echocurve_tilde_perform(t_int *w)
 {
-        t_expdelay_tilde *x = (t_expdelay_tilde *)(w[1]);
+        t_echocurve_tilde *x = (t_echocurve_tilde *)(w[1]);
         t_sample *in = (t_sample*)(w[2]);
         t_sample *out = (t_sample*)(w[3]);
         int n = (int)(w[4]);
@@ -108,17 +108,17 @@ static t_int *expdelay_tilde_perform(t_int *w)
        return (w+5);
 }
 
-static void expdelay_tilde_dsp(t_expdelay_tilde *x, t_signal **sp)
+static void echocurve_tilde_dsp(t_echocurve_tilde *x, t_signal **sp)
 {
-        dsp_add(expdelay_tilde_perform, 4, x, sp[0]->s_vec, sp[1]->s_vec, sp[0]->s_n);
+        dsp_add(echocurve_tilde_perform, 4, x, sp[0]->s_vec, sp[1]->s_vec, sp[0]->s_n);
         if (x->x_buftime <= 0)
         {
-                error("expdelay~: buffer duration must be greater than 0");
+                error("echocurve~: buffer duration must be greater than 0");
                 x->x_buftime = 1000;
         }
 }
 
-void expdelay_tilde_float(t_expdelay_tilde *x, t_float f)
+void echocurve_tilde_float(t_echocurve_tilde *x, t_float f)
 {
         x->x_deltime = f;
         if (x->x_deltime < 0) x->x_deltime = 0;
@@ -127,22 +127,22 @@ void expdelay_tilde_float(t_expdelay_tilde *x, t_float f)
         DEBUG(post("set x_deltime to %f",x->x_deltime); );
 }
 
-void expdelay_tilde_clear(t_expdelay_tilde *x)
+void echocurve_tilde_clear(t_echocurve_tilde *x)
 {
         UNUSED(x);
         DEBUG(post("clear!"); );
 }
 
-void expdelay_tilde_setup(void)
+void echocurve_tilde_setup(void)
 {
-        expdelay_tilde_class = class_new(gensym("expdelay~"),
-                                         (t_newmethod)expdelay_tilde_new,
-                                         (t_method)expdelay_tilde_free,
-                                         sizeof(t_expdelay_tilde),
+        echocurve_tilde_class = class_new(gensym("echocurve~"),
+                                         (t_newmethod)echocurve_tilde_new,
+                                         (t_method)echocurve_tilde_free,
+                                         sizeof(t_echocurve_tilde),
                                          0, A_GIMME, 0);
-        CLASS_MAINSIGNALIN(expdelay_tilde_class, t_expdelay_tilde, x_f);
-        class_addbang(expdelay_tilde_class, expdelay_tilde_bang);
-        class_addfloat(expdelay_tilde_class, expdelay_tilde_float);
-        class_addmethod(expdelay_tilde_class, (t_method)expdelay_tilde_clear, gensym("clear"), 0);
-        class_addmethod(expdelay_tilde_class, expdelay_tilde_dsp, gensym("dsp"), 0);
+        CLASS_MAINSIGNALIN(echocurve_tilde_class, t_echocurve_tilde, x_f);
+        class_addbang(echocurve_tilde_class, echocurve_tilde_bang);
+        class_addfloat(echocurve_tilde_class, echocurve_tilde_float);
+        class_addmethod(echocurve_tilde_class, (t_method)echocurve_tilde_clear, gensym("clear"), 0);
+        class_addmethod(echocurve_tilde_class, echocurve_tilde_dsp, gensym("dsp"), 0);
 }
