@@ -5,14 +5,13 @@
 #X obj 101 101 cnv 15 248 118 empty empty empty 20 12 0 14 -204800
 -66577 0;
 #X text 184 111 echocurve~;
-#X text 123 140 feedback delay with exponentially;
+#X text 122 140 feedback delay with exponentially;
 #X text 122 162 changing time and amplitude curve;
-#X text 120 196 by Joel Matthys | matthysmusic.com;
+#X text 122 196 by Joel Matthys | matthysmusic.com;
 #X coords 0 -1 1 1 250 120 2 100 100;
 #X restore 37 30 pd textbox;
 #X obj 44 212 cnv 15 150 30 empty empty empty 20 12 0 14 -262144 -66577
 0;
-#X floatatom 115 176 5 0 0 0 - - -, f 5;
 #X obj 50 220 echocurve~ 2000 20 0.7;
 #N canvas 0 23 450 300 audioout 0;
 #X obj 101 101 cnv 15 83 38 empty empty empty 20 12 0 14 -228856 -66577
@@ -65,34 +64,40 @@
 #X connect 11 0 10 0;
 #X connect 12 0 8 0;
 #X restore 50 171 pd audio;
-#X msg 145 251 durcurve 0.5;
-#X msg 145 271 ampcurve 1.5;
-#X msg 145 291 points 9;
-#X text 151 172 change total echo time;
-#X text 152 190 in ms (up to max time);
+#X msg 214 246 durcurve 0.5;
+#X msg 214 266 ampcurve 1.5;
+#X msg 214 286 points 9;
 #N canvas 0 23 450 300 textbox 0;
 #X obj 101 101 cnv 15 298 138 empty empty empty 20 12 0 14 -204800
 -66577 0;
 #X text 196 110 CREATION ARGUMENTS;
-#X text 123 143 1: maximum echo time in ms (default 2000);
-#X text 121 165 2: number of echo points (default 20);
-#X text 123 209 4: amplitude curve (default 1);
-#X text 121 187 3: duration curve (default 1);
+#X text 122 143 1: maximum echo time in ms (default 2000);
+#X text 122 165 2: number of echo points (default 20);
+#X text 122 187 3: duration curve (default 1);
+#X text 122 209 4: amplitude curve (default 1);
 #X coords 0 -1 1 1 300 140 2 100 100;
 #X restore 303 30 pd textbox;
 #N canvas 0 23 450 300 textbox 0;
 #X obj 101 101 cnv 15 248 118 empty empty empty 20 12 0 14 -204800
 -66577 0;
 #X text 184 111 CURVE PROPERTIES;
-#X text 111 155 durcurve = 1 : equally spaced points;
-#X text 118 177 durcurve between 0-1 : speeds up;
-#X text 117 196 durcurve > 1 : slows down;
-#X text 111 133 * durcurve and ampcurve must be > 0;
+#X text 115 133 * durcurve and ampcurve must be > 0;
+#X text 115 155 durcurve = 1 : equally spaced points;
+#X text 115 177 durcurve between 0-1 : speeds up;
+#X text 115 199 durcurve > 1 : slows down;
 #X coords 0 -1 1 1 250 120 2 100 100;
 #X restore 353 182 pd textbox;
+#X text 213 225 control messages;
+#X obj 113 173 cnv 15 36 20 empty empty empty 20 12 0 14 -204800 -66577
+0;
+#X floatatom 115 176 5 0 0 0 - - -, f 5;
+#X text 153 169 change total echo time;
+#X text 154 187 in ms (up to max time);
+#X msg 141 286 clear;
 #X connect 3 0 4 0;
-#X connect 4 0 5 0;
-#X connect 6 0 4 0;
-#X connect 7 0 4 0;
-#X connect 8 0 4 0;
-#X connect 9 0 4 0;
+#X connect 5 0 3 0;
+#X connect 6 0 3 0;
+#X connect 7 0 3 0;
+#X connect 8 0 3 0;
+#X connect 13 0 3 0;
+#X connect 16 0 3 0;
