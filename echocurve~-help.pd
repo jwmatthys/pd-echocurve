@@ -18,7 +18,6 @@
 0;
 #X obj 103 103 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
-#X msg 136 205 \; pd dsp 1;
 #X floatatom 150 104 3 0 100 0 - - -, f 3;
 #X obj 290 133 dbtorms;
 #X obj 263 191 *~;
@@ -26,12 +25,13 @@
 #X obj 263 212 dac~;
 #X text 101 122 DSP;
 #X text 135 122 dBs out;
-#X connect 1 0 2 0;
-#X connect 3 0 4 0;
-#X connect 4 0 5 1;
-#X connect 5 0 7 0;
-#X connect 5 0 7 1;
-#X connect 6 0 5 0;
+#X msg 136 205 \; pd dsp \$1;
+#X connect 1 0 9 0;
+#X connect 2 0 3 0;
+#X connect 3 0 4 1;
+#X connect 4 0 6 0;
+#X connect 4 0 6 1;
+#X connect 5 0 4 0;
 #X coords 0 -1 1 1 85 40 2 100 100;
 #X restore 36 266 pd audioout;
 #N canvas 1 83 450 300 audio 0;
