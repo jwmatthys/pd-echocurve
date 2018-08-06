@@ -1,7 +1,41 @@
-#N canvas 702 334 450 300 10;
-#X floatatom 204 66 5 0 0 0 - - -, f 5;
-#N canvas 1 83 450 300 blip 0;
-#X obj 178 36 inlet;
+#N canvas 595 195 646 343 10;
+#X obj 23 17 cnv 15 600 300 empty empty empty 20 12 0 14 -203904 -66577
+0;
+#N canvas 0 23 450 300 textbox 0;
+#X obj 101 101 cnv 15 248 118 empty empty empty 20 12 0 14 -204800
+-66577 0;
+#X text 184 111 echocurve~;
+#X text 123 140 feedback delay with exponentially;
+#X text 122 162 changing time and amplitude curve;
+#X text 120 196 by Joel Matthys | matthysmusic.com;
+#X coords 0 -1 1 1 250 120 2 100 100;
+#X restore 37 30 pd textbox;
+#X obj 44 212 cnv 15 150 30 empty empty empty 20 12 0 14 -262144 -66577
+0;
+#X floatatom 115 176 5 0 0 0 - - -, f 5;
+#X obj 50 220 echocurve~ 2000 20 0.7;
+#N canvas 0 23 450 300 audioout 0;
+#X obj 101 101 cnv 15 83 38 empty empty empty 20 12 0 14 -228856 -66577
+0;
+#X obj 103 103 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X msg 136 205 \; pd dsp 1;
+#X floatatom 150 104 3 0 100 0 - - -, f 3;
+#X obj 290 133 dbtorms;
+#X obj 263 191 *~;
+#X obj 245 27 inlet~;
+#X obj 263 212 dac~;
+#X text 101 122 DSP;
+#X text 135 122 dBs out;
+#X connect 1 0 2 0;
+#X connect 3 0 4 0;
+#X connect 4 0 5 1;
+#X connect 5 0 7 0;
+#X connect 5 0 7 1;
+#X connect 6 0 5 0;
+#X coords 0 -1 1 1 85 40 2 100 100;
+#X restore 36 266 pd audioout;
+#N canvas 1 83 450 300 audio 0;
 #X obj 178 71 t b b;
 #X obj 177 101 random 24;
 #X obj 176 204 osc~;
@@ -11,33 +45,54 @@
 #X obj 178 171 mtof;
 #X obj 176 133 + 65;
 #X obj 278 83 vline~;
-#X msg 278 60 0 5 \, 1 15 5 \, 0 500 20;
+#X obj 178 36 metro 1500;
+#X obj 179 15 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+1;
+#X obj 79 27 loadbang;
+#X msg 278 60 0 5 \, 1 10 5 \, 0 200 10;
 #X connect 0 0 1 0;
-#X connect 1 0 2 0;
-#X connect 1 1 10 0;
-#X connect 2 0 8 0;
+#X connect 0 1 12 0;
+#X connect 1 0 7 0;
+#X connect 2 0 3 0;
+#X connect 3 0 4 0;
+#X connect 5 0 3 1;
+#X connect 6 0 2 0;
+#X connect 7 0 6 0;
+#X connect 8 0 5 0;
+#X connect 8 0 5 1;
+#X connect 9 0 0 0;
+#X connect 10 0 9 0;
+#X connect 11 0 10 0;
+#X connect 12 0 8 0;
+#X restore 50 171 pd audio;
+#X msg 145 251 durcurve 0.5;
+#X msg 145 271 ampcurve 1.5;
+#X msg 145 291 points 9;
+#X text 151 172 change total echo time;
+#X text 152 190 in ms (up to max time);
+#N canvas 0 23 450 300 textbox 0;
+#X obj 101 101 cnv 15 298 138 empty empty empty 20 12 0 14 -204800
+-66577 0;
+#X text 196 110 CREATION ARGUMENTS;
+#X text 123 143 1: maximum echo time in ms (default 2000);
+#X text 121 165 2: number of echo points (default 20);
+#X text 123 209 4: amplitude curve (default 1);
+#X text 121 187 3: duration curve (default 1);
+#X coords 0 -1 1 1 300 140 2 100 100;
+#X restore 303 30 pd textbox;
+#N canvas 0 23 450 300 textbox 0;
+#X obj 101 101 cnv 15 248 118 empty empty empty 20 12 0 14 -204800
+-66577 0;
+#X text 184 111 CURVE PROPERTIES;
+#X text 111 155 durcurve = 1 : equally spaced points;
+#X text 118 177 durcurve between 0-1 : speeds up;
+#X text 117 196 durcurve > 1 : slows down;
+#X text 111 133 * durcurve and ampcurve must be > 0;
+#X coords 0 -1 1 1 250 120 2 100 100;
+#X restore 353 182 pd textbox;
 #X connect 3 0 4 0;
 #X connect 4 0 5 0;
-#X connect 6 0 4 1;
-#X connect 7 0 3 0;
-#X connect 8 0 7 0;
-#X connect 9 0 6 0;
-#X connect 9 0 6 1;
-#X connect 10 0 9 0;
-#X restore 138 62 pd blip;
-#X obj 138 14 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
-1;
-#X obj 207 145 vsl 15 128 0 1 0 0 empty empty empty 0 -9 0 10 -4034
--1 -1 5700 1;
-#X obj 133 247 dac~;
-#X obj 138 115 echocurve~ 2000 20 0.7;
-#X obj 138 34 metro 1500;
-#X obj 145 162 *~ 0.5;
-#X connect 0 0 5 0;
-#X connect 1 0 5 0;
-#X connect 2 0 6 0;
-#X connect 3 0 7 1;
-#X connect 5 0 7 0;
-#X connect 6 0 1 0;
-#X connect 7 0 4 1;
+#X connect 6 0 4 0;
 #X connect 7 0 4 0;
+#X connect 8 0 4 0;
+#X connect 9 0 4 0;

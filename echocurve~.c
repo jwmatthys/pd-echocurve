@@ -1,8 +1,8 @@
 #include "m_pd.h"
 #include <stdlib.h>
 #define UNUSED(x) (void)(x)
-//#define DEBUG(x) // debug off
-#define DEBUG(x) x // debug on
+#define DEBUG(x) // debug off
+//#define DEBUG(x) x // debug on
 #define DEFDELVS 64             /* LATER get this from canvas at DSP time */
 #define XTRASAMPS 4
 #define SAMPBLK 4
@@ -16,7 +16,7 @@ typedef struct _echocurve_tilde
         t_int x_bufsamps; /* max buffer length in msec */
         t_float x_deltime; /* delay in msec */
         t_int x_delsamps; /* delay in samples */
-        unsigned short x_num_points;
+        t_float x_num_points;
         t_float x_dur_curve; //(0.0001-inf]
         t_float x_amp_curve; //(0.0001-inf]
         t_outlet *x_out;
@@ -31,12 +31,6 @@ double experp (double inval, double inlo, double inhi, double curve, double outl
         double lerp = (inval - inlo) / (inhi - inlo);
         double expval = pow (lerp, curve);
         return expval * (outhi - outlo) + outlo;
-}
-
-void echocurve_tilde_bang(t_echocurve_tilde *x)
-{
-        UNUSED(x);
-        DEBUG(post("Hello world!"); );
 }
 
 void *echocurve_tilde_new(t_symbol *s, int argc, t_atom *argv)
@@ -89,7 +83,7 @@ static t_int *echocurve_tilde_perform(t_int *w)
         t_sample *out = (t_sample*)(w[3]);
         int n = (int)(w[4]);
         unsigned int i,s;
-         for (s = 0; s < n; s++)
+        for (s = 0; s < n; s++)
         {
                 for (i = 0; i < x->x_num_points; i++)
                 {
@@ -105,7 +99,7 @@ static t_int *echocurve_tilde_perform(t_int *w)
                 x->x_outbuf[x->x_bufindex] = 0.;
                 x->x_bufindex = ((x->x_bufindex + 1) % x->x_delsamps);
         }
-       return (w+5);
+        return (w+5);
 }
 
 static void echocurve_tilde_dsp(t_echocurve_tilde *x, t_signal **sp)
@@ -129,20 +123,53 @@ void echocurve_tilde_float(t_echocurve_tilde *x, t_float f)
 
 void echocurve_tilde_clear(t_echocurve_tilde *x)
 {
-        UNUSED(x);
-        DEBUG(post("clear!"); );
+        unsigned int i;
+        for (i=0; i<x->x_bufsamps; i++) x->x_outbuf[i] = (t_sample)0.;
+}
+
+void echocurve_tilde_set_ampcurve(t_echocurve_tilde *x, t_float f)
+{
+        x->x_amp_curve = f;
+        if (x->x_amp_curve <= 0)
+        {
+                error("echocurve~: ampcurve must be greater than 0.");
+                x->x_amp_curve = 0.0001;
+        }
+}
+
+void echocurve_tilde_set_durcurve(t_echocurve_tilde *x, t_float f)
+{
+        x->x_dur_curve = f;
+        if (x->x_dur_curve <= 0)
+        {
+                error("echocurve~: durcurve must be greater than 0.");
+                x->x_dur_curve = 0.0001;
+        }
+}
+
+void echocurve_tilde_set_points(t_echocurve_tilde *x, t_float f)
+{
+        x->x_num_points = f;
+        if (x->x_num_points <= 0)
+        {
+                error("echocurve~: points must be greater than 0.");
+                x->x_num_points = 1;
+        }
 }
 
 void echocurve_tilde_setup(void)
 {
         echocurve_tilde_class = class_new(gensym("echocurve~"),
-                                         (t_newmethod)echocurve_tilde_new,
-                                         (t_method)echocurve_tilde_free,
-                                         sizeof(t_echocurve_tilde),
-                                         0, A_GIMME, 0);
+                                          (t_newmethod)echocurve_tilde_new,
+                                          (t_method)echocurve_tilde_free,
+                                          sizeof(t_echocurve_tilde),
+                                          0, A_GIMME, 0);
         CLASS_MAINSIGNALIN(echocurve_tilde_class, t_echocurve_tilde, x_f);
-        class_addbang(echocurve_tilde_class, echocurve_tilde_bang);
         class_addfloat(echocurve_tilde_class, echocurve_tilde_float);
         class_addmethod(echocurve_tilde_class, (t_method)echocurve_tilde_clear, gensym("clear"), 0);
+        class_addmethod(echocurve_tilde_class, (t_method)echocurve_tilde_set_ampcurve, gensym("ampcurve"), A_FLOAT, 0);
+        class_addmethod(echocurve_tilde_class, (t_method)echocurve_tilde_set_durcurve, gensym("durcurve"), A_FLOAT, 0);
+        class_addmethod(echocurve_tilde_class, (t_method)echocurve_tilde_set_points, gensym("reps"), A_FLOAT, 0);
+        class_addmethod(echocurve_tilde_class, (t_method)echocurve_tilde_set_points, gensym("points"), A_FLOAT, 0);
         class_addmethod(echocurve_tilde_class, echocurve_tilde_dsp, gensym("dsp"), 0);
 }
